@@ -6,12 +6,12 @@ node('node') {
     }
 
     stage('Build Images') {
-      sh 'make test'
+      sh 'make test-docker'
       sh "go list -f '{{if len .TestGoFiles}}\"go test -coverprofile={{.Dir}}/.coverprofile {{.ImportPath}}\"{{end}}' ./... | xargs -L 1 sh -c"
       sh 'gover'
       sh 'goveralls -coverprofile=gover.coverprofile -service=travis-ci'
       sh 'make test-captplanet'
-      sh 'make test-docker images'
+      sh 'make images'
     }
 
     stage('Push Images') {
