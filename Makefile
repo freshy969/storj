@@ -87,7 +87,7 @@ clean-local:
 	docker network rm test-net || true
 
 test-coveralls: gover.coverprofile
-	goveralls -coverprofile=gover.coverprofile -service=travis-ci
+	goveralls -coverprofile=gover.coverprofile -service=jenkins
 
 test-docker:
 	docker-compose build test
