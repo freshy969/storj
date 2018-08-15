@@ -85,9 +85,13 @@ clean-local:
 	# cleanup docker network
 	docker network rm test-net || true
 
+test-list:
+	go list -f '{{if len .TestGoFiles}}"go test -coverprofile={{.Dir}}/.coverprofile {{.ImportPath}}"{{end}}' ./... | xargs -L 1 sh -c
+
 test-docker:
 	docker-compose up -d --remove-orphans test
 	docker-compose run test make test
+	docker-compose run test make test-list
 
 test-docker-clean:
 	-docker-compose down --rmi all
