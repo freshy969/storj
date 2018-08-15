@@ -92,7 +92,7 @@ test-coveralls: gover.coverprofile
 test-docker:
 	docker-compose build test
 	docker-compose up -d --remove-orphans test
-	docker-compose run test make test-coveralls
+	docker-compose run test make test
 
 test-docker-clean:
 	-docker-compose down --rmi all
