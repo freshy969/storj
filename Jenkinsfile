@@ -7,8 +7,6 @@ node('node') {
 
     stage('Build Images') {
       sh 'make test-docker'
-      sh 'gover'
-      sh 'goveralls -coverprofile=gover.coverprofile -service=travis-ci'
       sh 'make test-captplanet'
       sh 'make images'
     }

@@ -44,10 +44,11 @@ build-dev-deps:
 	gometalinter --install --force
 
 test: lint
-	go install -v ./...
 	go test -v -covermode=count -coverprofile=coverage.out ./...
+	go list -f '{{if len .TestGoFiles}}"go test -coverprofile={{.Dir}}/.coverprofile {{.ImportPath}}"{{end}}' ./... | xargs -n 1 sh -c
+
+gover.coverprofile: test
 	gover
-	@echo done
 
 build-binaries:
 	docker build -t hc .
@@ -85,13 +86,13 @@ clean-local:
 	# cleanup docker network
 	docker network rm test-net || true
 
-test-list:
-	go list -f '{{if len .TestGoFiles}}"go test -coverprofile={{.Dir}}/.coverprofile {{.ImportPath}}"{{end}}' ./... | xargs -n 1 sh -c
+test-coveralls: gover.coverprofile
+	goveralls -coverprofile=gover.coverprofile -service=travis-ci
 
 test-docker:
+	docker-compose build test
 	docker-compose up -d --remove-orphans test
-	docker-compose run test make test
-	docker-compose run test make test-list
+	docker-compose run test make test-coveralls
 
 test-docker-clean:
 	-docker-compose down --rmi all

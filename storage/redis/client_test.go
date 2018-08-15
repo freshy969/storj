@@ -4,11 +4,7 @@
 package redis
 
 import (
-	"fmt"
-	"os"
-	"os/exec"
 	"testing"
-	"time"
 
 	"github.com/go-redis/redis"
 	"github.com/stretchr/testify/assert"
@@ -43,6 +39,9 @@ func (rt *RedisClientTest) HandleErr(err error, msg string) {
 }
 
 func TestListWithoutStartKey(t *testing.T) {
+	done := test.EnsureRedis(t)
+	defer done()
+
 	rt := NewRedisClientTest(t)
 	defer rt.Close()
 
@@ -63,6 +62,9 @@ func TestListWithoutStartKey(t *testing.T) {
 }
 
 func TestListWithStartKey(t *testing.T) {
+	done := test.EnsureRedis(t)
+	defer done()
+
 	rt := NewRedisClientTest(t)
 	defer rt.Close()
 
@@ -311,26 +313,4 @@ func TestCrudInvalidConnection(t *testing.T) {
 			testWithInvalidConnection(t, c.testFunc)
 		})
 	}
-}
-
-func TestMain(m *testing.M) {
-	cmd := exec.Command("redis-server")
-
-	err := cmd.Start()
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	//waiting for "redis-server command" to start
-	time.Sleep(time.Second)
-
-	retCode := m.Run()
-
-	err = cmd.Process.Kill()
-	if err != nil {
-		fmt.Print(err)
-	}
-
-	os.Exit(retCode)
 }
